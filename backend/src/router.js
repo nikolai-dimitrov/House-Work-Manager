@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const userController = require("./controllers/userController");
-router.use("/users", userController);
-// router.get("*", (req, res) => {
-//     res.json({msg:'Not found'})
-//   });
+const jobController = require("./controllers/jobController");
+router.use("/api/users", userController);
+router.use("/api/jobs", jobController);
+
 module.exports = router;
