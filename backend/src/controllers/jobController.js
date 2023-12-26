@@ -70,11 +70,25 @@ router.put("/:id", async (req, res) => {
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(404).json({ error: "No such job" });
         }
+
         const data = { ...req.body };
-        const job = await jobService.update(id, data);
-        if (!job) {
+        const currentJob = await jobService.getOne(id);
+
+        if (!currentJob) {
             return res.status(404).json({ error: "No such job" });
         }
+
+        await cloudinary.uploader.destroy(currentJob.image.public_id);
+        const newImage = await cloudinary.uploader.upload(data.image, {
+            folder: "houseImages",
+        });
+
+        data.image = {
+            public_id: newImage.public_id,
+            url: newImage.secure_url,
+        };
+
+        const job = await jobService.update(id, data);
         res.status(200).json(job);
     } catch (error) {
         res.status(400).json({ error: error.message });
