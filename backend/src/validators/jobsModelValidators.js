@@ -23,3 +23,11 @@ exports.validateTime = (inputTime, inputDate) => {
         }
     }
 };
+
+// exports.validateWhiteSpace = (inputStr) => {
+//     const value = inputStr.replace(/\s/g, "");
+//     if (value.length > 1) {
+//         return true;
+//     }
+//     return false;
+// };
