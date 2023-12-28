@@ -3,12 +3,15 @@ const profileSchema = new mongoose.Schema({
     firstName: {
         type: "string",
         required: [true, "First Name is required."],
+        minLength: [3, "First Name must be at least 3 characters!"],
         default: "",
     },
 
     lastName: {
         type: "string",
         required: [true, "Last Name is required."],
+        minLength: [3, "Last Name must be at least 4 characters!"],
+        default: "",
     },
 
     phoneNumber: {
