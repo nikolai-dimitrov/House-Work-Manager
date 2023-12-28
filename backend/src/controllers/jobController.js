@@ -2,7 +2,9 @@ const router = require("express").Router();
 const jobService = require("../services/jobService");
 const mongoose = require("mongoose");
 const cloudinary = require("../configs/cloudinaryConfig");
+const { sanitizeData } = require("../middlewares/sanitizer");
 
+// Retrieve all Jobs
 router.get("/", async (req, res) => {
     try {
         const jobs = await jobService.getAll();
@@ -12,6 +14,7 @@ router.get("/", async (req, res) => {
     }
 });
 
+// Details Job
 router.get("/:id", async (req, res) => {
     try {
         const id = req.params.id;
@@ -28,8 +31,10 @@ router.get("/:id", async (req, res) => {
     }
 });
 
-router.post("/", async (req, res) => {
+//Create Job
+router.post("/", sanitizeData(), async (req, res) => {
     const data = { ...req.body, owner: req.user?._id };
+
     try {
         const result = await cloudinary.uploader.upload(data.image, {
             folder: "houseImages",
@@ -47,6 +52,7 @@ router.post("/", async (req, res) => {
     }
 });
 
+//Delete Job
 router.delete("/:id", async (req, res) => {
     try {
         const id = req.params.id;
@@ -64,7 +70,8 @@ router.delete("/:id", async (req, res) => {
     }
 });
 
-router.put("/:id", async (req, res) => {
+// Edit Job
+router.put("/:id", sanitizeData(), async (req, res) => {
     try {
         const id = req.params.id;
         if (!mongoose.Types.ObjectId.isValid(id)) {
