@@ -6,24 +6,12 @@ const jobSchema = new mongoose.Schema(
             type: "String",
             required: [true, "Title is required!"],
             minLength: [4, "Title must be at least 4 characters!"],
-            // validate: [
-            //     {
-            //         validator: jobsModelValidators.validateWhiteSpace,
-            //         message: "Cannot contain only whitespace characters",
-            //     },
-            // ],
         },
 
         description: {
             type: "String",
             required: [true, "Description is required!"],
             minLength: [10, "Description must be at least 10 characters!"],
-            // validate: [
-            //     {
-            //         validator: jobsModelValidators.validateWhiteSpace,
-            //         message: "Cannot contain only whitespace characters",
-            //     },
-            // ],
         },
 
         image: {
@@ -67,24 +55,12 @@ const jobSchema = new mongoose.Schema(
             type: "String",
             required: [true, "City is required!"],
             minLength: [4, "City must be at least 4 characters!"],
-            // validate: [
-            //     {
-            //         validator: jobsModelValidators.validateWhiteSpace,
-            //         message: "Cannot contain only whitespace characters",
-            //     },
-            // ],
         },
 
         street: {
             type: "String",
             required: [true, "Street is required!"],
             minLength: [4, "Street must be at least 4 characters!"],
-            // validate: [
-            //     {
-            //         validator: jobsModelValidators.validateWhiteSpace,
-            //         message: "Cannot contain only whitespace characters",
-            //     },
-            // ],
         },
 
         streetNumber: {
