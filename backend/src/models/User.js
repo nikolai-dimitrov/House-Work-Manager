@@ -1,16 +1,9 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const userSchema = new mongoose.Schema({
-    username: {
-        type: "String",
-        required: [true, "Username is required!"],
-        minLength: [3, "Username must be at least 3 characters!"],
-    },
-
     email: {
         type: "String",
         required: [true, "Email is required!"],
-        minLength: [10, "Email must be at least 10 characters"],
         match: [
             /^[A-Za-z0-9_\.]+@[A-Za-z]+\.[A-Za-z]{2,3}$/,
             "Email is not valid!",
