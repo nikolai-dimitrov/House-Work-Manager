@@ -7,6 +7,7 @@ exports.authentication = async (req, res, next) => {
         try {
             const userId = await jwt.verify(token, JWT_SECRET);
             req.userId = userId;
+            next()
         } catch (error) {
             res.status(401).json({ error: "Invalid access token." });
         }
