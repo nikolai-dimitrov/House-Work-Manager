@@ -1,8 +1,9 @@
 const router = require("express").Router();
 const userService = require("../services/userService");
+const { authRequired } = require("../middlewares/authMiddleware");
 
 // Login
-router.post("/login", async (req, res) => {
+router.post("/login", authRequired(false), async (req, res) => {
     const { email, password } = req.body;
     try {
         let { user, token } = await userService.login({ email, password });
@@ -14,7 +15,7 @@ router.post("/login", async (req, res) => {
 });
 
 // Register
-router.post("/register", async (req, res) => {
+router.post("/register", authRequired(false), async (req, res) => {
     const { email, password, repeatPassword } = req.body;
     try {
         let { newUser, token } = await userService.register({

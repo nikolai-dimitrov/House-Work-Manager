@@ -3,6 +3,7 @@ const jobService = require("../services/jobService");
 const mongoose = require("mongoose");
 const cloudinary = require("../configs/cloudinaryConfig");
 const { sanitizeData } = require("../middlewares/sanitizer");
+const { authRequired } = require("../middlewares/authMiddleware");
 
 // Retrieve all Jobs
 router.get("/", async (req, res) => {
@@ -32,7 +33,7 @@ router.get("/:id", async (req, res) => {
 });
 
 //Create Job
-router.post("/", sanitizeData(), async (req, res) => {
+router.post("/", sanitizeData(), authRequired(true), async (req, res) => {
     const data = { ...req.body, owner: req.user?._id };
 
     try {
@@ -53,7 +54,7 @@ router.post("/", sanitizeData(), async (req, res) => {
 });
 
 //Delete Job
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", authRequired(true), async (req, res) => {
     try {
         const id = req.params.id;
         if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -71,7 +72,7 @@ router.delete("/:id", async (req, res) => {
 });
 
 // Edit Job
-router.put("/:id", sanitizeData(), async (req, res) => {
+router.put("/:id", sanitizeData(), authRequired(true), async (req, res) => {
     try {
         const id = req.params.id;
         if (!mongoose.Types.ObjectId.isValid(id)) {
