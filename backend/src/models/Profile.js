@@ -18,6 +18,7 @@ const profileSchema = new mongoose.Schema({
         type: "string",
         required: [true, "Phone Number is required."],
         match: [/^0[1-9]{1}[0-9]{8}$/, "Phone Number is not valid!"],
+        default: "",
     },
 
     //Add default profile picture
