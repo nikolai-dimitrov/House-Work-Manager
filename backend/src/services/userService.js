@@ -6,20 +6,29 @@ const { JWT_SECRET } = require("../constants");
 // const { buildPayloadJwt } = require("../utils/authUtil");
 
 exports.login = async (userData) => {
+    if (!userData.email || !userData.password) {
+        throw new Error("All fields are required.");
+    }
+
     const user = await User.findOne({ email: userData.email });
     if (!user) {
         throw new Error("Invalid email or password");
     }
+
     const passwordValid = await bcrypt.compare(
         userData.password,
         user.password
     );
+
     if (!passwordValid) {
         throw new Error("Invalid email or password");
     }
 
     // const payload = buildPayloadJwt(user);
-    const token = await jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: "2d" });
+    const token = await jwt.sign({ _id: user._id }, JWT_SECRET, {
+        expiresIn: "2d",
+    });
+
     return { user, token };
 };
 
