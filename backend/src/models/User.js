@@ -21,11 +21,6 @@ const userSchema = new mongoose.Schema({
         type: "Boolean",
         default: false,
     },
-
-    // profile: {
-    //     type: mongoose.Types.ObjectId,
-    //     ref: "Profile",
-    // },
 });
 
 userSchema.virtual("repeatPassword").set(function (value) {
