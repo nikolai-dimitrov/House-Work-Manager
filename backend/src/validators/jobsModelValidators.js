@@ -1,16 +1,17 @@
 const dateFormatter = require("../utils/dateFormatter");
 exports.validateDate = (inputDate) => {
-    const dateNow = dateFormatter.changeFormat(new Date());
+    let dateNow = dateFormatter.changeFormat(new Date());
     if (inputDate < dateNow) {
+        console.log((inputDate = dateNow));
         return false;
     }
     return true;
 };
 
 exports.validateTime = (inputTime, inputDate) => {
+    const dateNow = dateFormatter.changeFormat(new Date());
     const date = new Date();
-    const dateNow = dateFormatter.changeFormat(date);
-    [startHour, finishHour] = inputTime.split(" - ");
+    let [startHour, finishHour] = inputTime.split(" - ");
     if (startHour >= finishHour) {
         throw new Error("Finish hour must be greater than start hour.");
     }
@@ -23,11 +24,3 @@ exports.validateTime = (inputTime, inputDate) => {
         }
     }
 };
-
-// exports.validateWhiteSpace = (inputStr) => {
-//     const value = inputStr.replace(/\s/g, "");
-//     if (value.length > 1) {
-//         return true;
-//     }
-//     return false;
-// };

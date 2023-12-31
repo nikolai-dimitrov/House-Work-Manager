@@ -12,6 +12,7 @@ function App() {
             setImg(reader.result);
         };
     };
+    console.log(document.getElementById("dd"));
     console.log(img);
     return (
         <>
@@ -20,6 +21,7 @@ function App() {
                 <input type="file" />
                 <button onClick={sendFile}>Send</button>
             </form>
+            <input type="date" id="dd" onChange={(e) => console.log(e.target.value)}/>
         </>
     );
 }
