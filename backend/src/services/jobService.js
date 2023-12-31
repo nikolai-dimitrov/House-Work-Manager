@@ -13,7 +13,10 @@ exports.create = (data) => {
 };
 
 exports.update = (id, newData) => {
-    return Job.findByIdAndUpdate(id, newData, { runValidators: true });
+    return Job.findByIdAndUpdate(id, newData, {
+        runValidators: true,
+        new: true,
+    });
 };
 
 exports.remove = (id) => {
