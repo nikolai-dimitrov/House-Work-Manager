@@ -30,8 +30,8 @@ const jobSchema = new mongoose.Schema(
             required: [true, "Job Date is required!"],
             minLength: [8, "Description must be at least 8 characters!"],
             match: [
-                /^(0?[1-9]|[12][0-9]|3[01])[\/\-](0?[1-9]|1[012])[\/\-]\d{4}$/,
-                "Date format is dd/mm/yyyy",
+                /^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/,
+                "Date format is yyyy-mm-dd",
             ],
             validate: [
                 {
@@ -87,10 +87,10 @@ const jobSchema = new mongoose.Schema(
             default: null,
         },
 
-        // owner: {
-        //     type: mongoose.Types.ObjectId,
-        //     ref: "User",
-        // },
+        owner: {
+            type: mongoose.Types.ObjectId,
+            ref: "User",
+        },
     },
 
     { timestamps: true }
