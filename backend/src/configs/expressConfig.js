@@ -4,7 +4,7 @@ const router = require("../router");
 const { authentication } = require("../middlewares/authMiddleware");
 const setupExpress = (app) => {
     // app.use(express.urlencoded({ extended: false }));
-    app.use(express.json());
+    app.use(express.json({ limit: "100mb" }));
     app.use(cookieParser());
     // Auth middleware
     app.use(authentication);
