@@ -1,5 +1,5 @@
 const Profile = require("../models/Profile");
-const User = require("../models/User");
+
 exports.getDetails = async (userId) => {
     const currentProfile = await Profile.findOne({ owner: userId });
     if (!currentProfile) {
