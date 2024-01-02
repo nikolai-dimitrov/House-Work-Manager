@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+const cloudinary = require("../configs/cloudinaryConfig");
+
 const profileSchema = new mongoose.Schema({
     firstName: {
         type: "string",
@@ -17,16 +19,16 @@ const profileSchema = new mongoose.Schema({
         required: [true, "Phone Number is required."],
         match: [/^0[1-9]{1}[0-9]{8}$/, "Phone Number is not valid!"],
     },
-    // TODO: Folder with profile pictures in cloudinary and change houseImages/ -> profileImages
+
     profileImg: {
         public_id: {
             type: "String",
-            default: "houseImages/ui4jtdbcgjyhyv3ybdbg",
+            default: "profileImages/fl1nxyregc8uum3yckdz",
         },
         url: {
             type: "String",
             default:
-                "https://res.cloudinary.com/drbrcolnz/image/upload/v1704027745/houseImages/ui4jtdbcgjyhyv3ybdbg.png",
+                "https://res.cloudinary.com/drbrcolnz/image/upload/v1704198003/profileImages/fl1nxyregc8uum3yckdz.png",
         },
     },
 
@@ -35,5 +37,16 @@ const profileSchema = new mongoose.Schema({
         ref: "User",
     },
 });
+
+profileSchema.pre("findOneAndUpdate", async function () {
+    const profileId = this._conditions._id;
+    const currentProfile = await Profile.findOne({ _id: profileId });
+    const oldImagePublicId = currentProfile.profileImg.public_id;
+
+    if (oldImagePublicId != "profileImages/fl1nxyregc8uum3yckdz") {
+        await cloudinary.uploader.destroy(oldImagePublicId);
+    }
+});
+
 const Profile = mongoose.model("Profile", profileSchema);
 module.exports = Profile;
