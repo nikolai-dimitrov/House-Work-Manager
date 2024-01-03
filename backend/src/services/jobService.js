@@ -22,3 +22,11 @@ exports.update = (id, newData) => {
 exports.remove = (id) => {
     return Job.findByIdAndDelete(id);
 };
+
+exports.isOwner = async (jobId, userId) => {
+    const job = await this.getOne(jobId);
+    if (!job) {
+        throw new Error("No such job");
+    }
+    return job.owner?._id == userId ? true : false;
+};
