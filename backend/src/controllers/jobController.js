@@ -7,7 +7,6 @@ const { authRequired } = require("../middlewares/authMiddleware");
 const { profileRequired } = require("../middlewares/profileMiddleware");
 
 // Retrieve all Jobs
-
 router.get("/", async (req, res) => {
     try {
         const jobs = await jobService.getAll();
@@ -65,13 +64,18 @@ router.post(
 router.delete("/:id", authRequired(true), profileRequired, async (req, res) => {
     try {
         const id = req.params.id;
+        const userId = req.user?._id;
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(404).json({ error: "No such job" });
         }
-        const job = await jobService.remove(id);
-        if (!job) {
-            return res.status(404).json({ error: "No such job" });
+        const isOwner = await jobService.isOwner(id, userId);
+        if (!isOwner) {
+            return res
+                .status(401)
+                .json({ error: "You can delete only your entries." });
         }
+        const job = await jobService.remove(id);
+
         await cloudinary.uploader.destroy(job.image.public_id);
         res.status(200).json(job);
     } catch (error) {
@@ -88,6 +92,7 @@ router.put(
     async (req, res) => {
         try {
             const id = req.params.id;
+            const userId = req.user?._id;
             if (!mongoose.Types.ObjectId.isValid(id)) {
                 return res.status(404).json({ error: "No such job" });
             }
@@ -97,6 +102,12 @@ router.put(
 
             if (!currentJob) {
                 return res.status(404).json({ error: "No such job" });
+            }
+
+            if (currentJob.owner._id != userId) {
+                return res
+                    .status(401)
+                    .json({ error: "You can edit only your entries." });
             }
 
             await cloudinary.uploader.destroy(currentJob.image.public_id);

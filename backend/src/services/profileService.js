@@ -8,9 +8,7 @@ exports.getDetails = async (userId) => {
 
     return currentProfile;
 };
-exports.profileExists = async (userId) => {
-    return await Profile.exists({ owner: userId})
-};
+
 exports.create = async (profileData) => {
     let existingProfile = await Profile.findOne({ owner: profileData.owner });
     if (existingProfile) {
@@ -32,4 +30,8 @@ exports.update = async (profileData, userId) => {
         runValidators: true,
         new: true,
     });
+};
+
+exports.profileExists = async (userId) => {
+    return await Profile.exists({ owner: userId });
 };
