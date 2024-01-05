@@ -1,5 +1,4 @@
 const errorHandler = (err, req, res, next) => {
-    console.log("error getted");
     const errHttpCode = err.httpCode || 400;
     const errMsg = err.message || "Something went wrong";
     res.status(errHttpCode).json({
