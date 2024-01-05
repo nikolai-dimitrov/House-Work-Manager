@@ -1,11 +1,19 @@
 const Job = require("../models/Job");
-
+const mongoose = require("mongoose");
+const CustomError = require("../utils/customError");
 exports.getAll = () => {
     return Job.find({});
 };
 
-exports.getOne = (id) => {
-    return Job.findById(id);
+exports.getOne = async (id) => {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        throw new CustomError(404, "No such job");
+    }
+    let currentJob = await Job.findById(id);
+    if (!currentJob) {
+        throw new CustomError(404, "No such job");
+    }
+    return currentJob;
 };
 
 exports.create = (data) => {
@@ -21,12 +29,4 @@ exports.update = (id, newData) => {
 
 exports.remove = (id) => {
     return Job.findByIdAndDelete(id);
-};
-
-exports.isOwner = async (jobId, userId) => {
-    const job = await this.getOne(jobId);
-    if (!job) {
-        throw new Error("No such job");
-    }
-    return job.owner?._id == userId ? true : false;
 };
