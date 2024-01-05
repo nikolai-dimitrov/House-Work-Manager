@@ -1,6 +1,5 @@
 const router = require("express").Router();
 const jobService = require("../services/jobService");
-const mongoose = require("mongoose");
 const cloudinary = require("../configs/cloudinaryConfig");
 const { sanitizeData } = require("../middlewares/sanitizer");
 const { authRequired } = require("../middlewares/authMiddleware");
