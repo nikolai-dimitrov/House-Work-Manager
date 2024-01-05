@@ -4,18 +4,18 @@ const profileService = require("../services/profileService");
 const cloudinary = require("../configs/cloudinaryConfig");
 
 // Get user's profile details
-router.get("/details", authRequired(true), async (req, res) => {
+router.get("/details", authRequired(true), async (req, res, next) => {
     try {
         const userId = req.user?._id;
         const profile = await profileService.getDetails(userId);
         res.status(200).json(profile);
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        next(error);
     }
 });
 
 // Create user's profile
-router.post("/create", authRequired(true), async (req, res) => {
+router.post("/create", authRequired(true), async (req, res, next) => {
     try {
         const profileData = { ...req.body, owner: req.user?._id };
         if (profileData.profileImg) {
@@ -35,12 +35,12 @@ router.post("/create", authRequired(true), async (req, res) => {
         const profile = await profileService.create(profileData);
         res.status(201).json({ profile });
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        next(error);
     }
 });
 
 // Edit user's profile
-router.put("/edit", authRequired(true), async (req, res) => {
+router.put("/edit", authRequired(true), async (req, res, next) => {
     try {
         const userId = req.user?._id;
         const profileData = { ...req.body };
@@ -60,9 +60,8 @@ router.put("/edit", authRequired(true), async (req, res) => {
         const profile = await profileService.update(profileData, userId);
         res.status(201).json({ profile });
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        next(error);
     }
 });
 
-// 5. If not profile created cannot post edit delete jobs only view (like unauthenticated user)
 module.exports = router;

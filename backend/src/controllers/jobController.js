@@ -5,31 +5,27 @@ const cloudinary = require("../configs/cloudinaryConfig");
 const { sanitizeData } = require("../middlewares/sanitizer");
 const { authRequired } = require("../middlewares/authMiddleware");
 const { profileRequired } = require("../middlewares/profileMiddleware");
+const CustomError = require("../utils/customError");
 
 // Retrieve all Jobs
-router.get("/", async (req, res) => {
+router.get("/", async (req, res, next) => {
     try {
         const jobs = await jobService.getAll();
         res.status(200).json(jobs);
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        next(error);
     }
 });
 
 // Details Job
-router.get("/:id", async (req, res) => {
+router.get("/:id", async (req, res, next) => {
     try {
         const id = req.params.id;
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(404).json({ error: "No such job" });
-        }
         const currentJob = await jobService.getOne(id);
-        if (!currentJob) {
-            return res.status(404).json({ error: "No such job" });
-        }
+
         res.status(200).json(currentJob);
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        next(error);
     }
 });
 
@@ -39,7 +35,7 @@ router.post(
     sanitizeData(),
     authRequired(true),
     profileRequired,
-    async (req, res) => {
+    async (req, res, next) => {
         const data = { ...req.body, owner: req.user?._id };
 
         try {
@@ -55,33 +51,35 @@ router.post(
 
             res.status(201).json(job);
         } catch (error) {
-            res.status(400).json({ error: error.message });
+            next(error);
         }
     }
 );
 
 //Delete Job
-router.delete("/:id", authRequired(true), profileRequired, async (req, res) => {
-    try {
-        const id = req.params.id;
-        const userId = req.user?._id;
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(404).json({ error: "No such job" });
-        }
-        const isOwner = await jobService.isOwner(id, userId);
-        if (!isOwner) {
-            return res
-                .status(401)
-                .json({ error: "You can delete only your entries." });
-        }
-        const job = await jobService.remove(id);
+router.delete(
+    "/:id",
+    authRequired(true),
+    profileRequired,
+    async (req, res, next) => {
+        try {
+            const id = req.params.id;
+            const userId = req.user?._id;
+            const currentJob = await jobService.getOne(id);
 
-        await cloudinary.uploader.destroy(job.image.public_id);
-        res.status(200).json(job);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
+            if (currentJob.owner._id != userId) {
+                throw new CustomError(401, "You are not an owner.");
+            }
+
+            const job = await jobService.remove(id);
+
+            await cloudinary.uploader.destroy(job.image.public_id);
+            res.status(200).json(job);
+        } catch (error) {
+            next(error);
+        }
     }
-});
+);
 
 // Edit Job
 router.put(
@@ -89,25 +87,16 @@ router.put(
     sanitizeData(),
     authRequired(true),
     profileRequired,
-    async (req, res) => {
+    async (req, res, next) => {
         try {
             const id = req.params.id;
             const userId = req.user?._id;
-            if (!mongoose.Types.ObjectId.isValid(id)) {
-                return res.status(404).json({ error: "No such job" });
-            }
-
             const data = { ...req.body };
+
             const currentJob = await jobService.getOne(id);
 
-            if (!currentJob) {
-                return res.status(404).json({ error: "No such job" });
-            }
-
             if (currentJob.owner._id != userId) {
-                return res
-                    .status(401)
-                    .json({ error: "You can edit only your entries." });
+                throw new CustomError(401, "You are not an owner.");
             }
 
             await cloudinary.uploader.destroy(currentJob.image.public_id);
@@ -123,7 +112,7 @@ router.put(
             const job = await jobService.update(id, data);
             res.status(200).json(job);
         } catch (error) {
-            res.status(400).json({ error: error.message });
+            next(error);
         }
     }
 );
