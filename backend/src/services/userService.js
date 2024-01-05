@@ -4,16 +4,17 @@ const bcrypt = require("bcrypt");
 const validator = require("validator");
 const jwt = require("../libs/jwt");
 const { JWT_SECRET } = require("../constants");
+const CustomError = require("../utils/customError");
 // const { buildPayloadJwt } = require("../utils/authUtil");
 
 exports.login = async (userData) => {
     if (!userData.email || !userData.password) {
-        throw new Error("All fields are required.");
+        throw new CustomError(400, "All fields are required.");
     }
 
     const user = await User.findOne({ email: userData.email });
     if (!user) {
-        throw new Error("Invalid email or password");
+        throw new CustomError(401, "Invalid email or password");
     }
 
     const passwordValid = await bcrypt.compare(
@@ -22,7 +23,7 @@ exports.login = async (userData) => {
     );
 
     if (!passwordValid) {
-        throw new Error("Invalid email or password");
+        throw new CustomError(401, "Invalid email or password");
     }
 
     // const payload = buildPayloadJwt(user);
@@ -35,21 +36,21 @@ exports.login = async (userData) => {
 
 exports.register = async (userData) => {
     if (!userData.email || !userData.password || !userData.repeatPassword) {
-        throw new Error("All fields are required.");
+        throw new CustomError(400, "All fields are required.");
     }
 
     if (!validator.isEmail(userData.email)) {
-        throw new Error("Email is not valid.");
+        throw new CustomError(400, "Email is not valid.");
     }
 
     if (!validator.isStrongPassword(userData.password)) {
-        throw new Error("This password isn't strong enough.");
+        throw new CustomError(400, "This password isn't strong enough.");
         // Password must contain 1 Uppercase character and 1 symbol and 1 digit
     }
 
     const existingUser = await User.findOne({ email: userData.email });
     if (existingUser) {
-        throw new Error("Email already exists.");
+        throw new CustomError(409, "Email already exists.");
     }
 
     let newUser = await User.create(userData);

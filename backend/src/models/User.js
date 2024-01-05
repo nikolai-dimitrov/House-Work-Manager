@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
+const CustomError = require("../utils/customError");
 const userSchema = new mongoose.Schema({
     email: {
         type: "String",
@@ -25,7 +26,7 @@ const userSchema = new mongoose.Schema({
 
 userSchema.virtual("repeatPassword").set(function (value) {
     if (value != this.password) {
-        throw new Error("Password miss match!");
+        throw new CustomError(400, "Password miss match!");
     }
 });
 
