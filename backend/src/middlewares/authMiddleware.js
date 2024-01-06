@@ -1,5 +1,6 @@
 const jwt = require("../libs/jwt");
 const { JWT_SECRET } = require("../constants");
+const CustomError = require("../utils/customError");
 exports.authentication = async (req, res, next) => {
     const { authorization } = req.headers;
     if (authorization) {
@@ -9,8 +10,7 @@ exports.authentication = async (req, res, next) => {
             req.user = user;
             next();
         } catch (error) {
-            res.status(401).json({ message: "Invalid access token." });
-            return;
+            next(error);
         }
     } else {
         next();
@@ -21,14 +21,12 @@ exports.authRequired = (isRequired) => {
     return function (req, res, next) {
         if (isRequired === true) {
             if (!req.user) {
-                res.status(401).json({ message: "Login required." });
-                return;
+                return next(new CustomError(401, "You have to be logged in."));
             }
             next();
         } else {
             if (req.user) {
-                res.status(409).json({ message: "You are already logged in." });
-                return;
+                return next(new CustomError(409, "You are already logged in."));
             }
             next();
         }
