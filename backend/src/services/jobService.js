@@ -2,7 +2,7 @@ const Job = require("../models/Job");
 const mongoose = require("mongoose");
 const CustomError = require("../utils/customError");
 exports.getAll = () => {
-    return Job.find({});
+    return Job.find({ status: "Published" });
 };
 
 exports.getOne = async (id) => {
