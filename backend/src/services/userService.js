@@ -48,9 +48,9 @@ exports.register = async (userData) => {
     }
 
     const existingUser = await User.findOne({ email: userData.email });
-    if (existingUser) {
-        throw new CustomError(409, "Email already exists.");
-    }
+    // if (existingUser) {
+    //     throw new CustomError(409, "Email already exists.");
+    // }
 
     let newUser = await User.create(userData);
 

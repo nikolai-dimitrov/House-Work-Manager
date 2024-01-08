@@ -6,7 +6,7 @@ class CustomError extends Error {
         super(message);
         this.httpCode = httpCode;
         this.message = message;
-        this.isCustom = true;
+        this.showProd = true;
     }
 }
 module.exports = CustomError;
