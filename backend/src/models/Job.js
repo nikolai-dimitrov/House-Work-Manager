@@ -66,7 +66,7 @@ const jobSchema = new mongoose.Schema(
         streetNumber: {
             type: "Number",
             required: [true, "Street Number is required!"],
-            min: [0, "StreetNumber must be positive number!"],
+            min: [0, "Street Number must be positive number!"],
         },
 
         status: {
