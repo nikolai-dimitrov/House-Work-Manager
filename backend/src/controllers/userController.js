@@ -29,9 +29,10 @@ router.post("/register", authRequired(false), async (req, res, next) => {
         next(error);
     }
 });
+//TODO:Forgot password
 
 // Logout
-//TODO:Logout 
+//TODO:Logout
 router.get("/logout", (req, res) => {
     res.json({ message: "logout" });
 });
