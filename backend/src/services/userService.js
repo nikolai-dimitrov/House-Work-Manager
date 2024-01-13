@@ -26,9 +26,13 @@ exports.login = async (userData) => {
     }
 
     // const payload = buildPayloadJwt(user);
-    const token = await jwt.sign({ _id: user._id }, JWT_SECRET, {
-        expiresIn: "2d",
-    });
+    const token = await jwt.sign(
+        { _id: user._id, employer: user.employer },
+        JWT_SECRET,
+        {
+            expiresIn: "2d",
+        }
+    );
 
     return { user, token };
 };
@@ -55,9 +59,13 @@ exports.register = async (userData) => {
     let newUser = await User.create(userData);
 
     // const payload = buildPayloadJwt(newUser);
-    const token = await jwt.sign({ _id: newUser._id }, JWT_SECRET, {
-        expiresIn: "2d",
-    });
+    const token = await jwt.sign(
+        { _id: newUser._id, employer: newUser.employer },
+        JWT_SECRET,
+        {
+            expiresIn: "2d",
+        }
+    );
 
     return { newUser, token };
 };
