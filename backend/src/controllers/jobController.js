@@ -29,23 +29,6 @@ router.get("/:id", async (req, res, next) => {
     }
 });
 
-// Take Job
-//TODO: if not owner , if hasn't already taken this job,if not registered as job provider,
-// router.get(
-//     "/apply/:id",
-//     authRequired(true),
-//     profileRequired,
-//     async (req, res, next) => {
-//         const id = req.params.id;
-//         const userId = req.user?._id;
-//         try {
-//             const currentJob = await jobService.getOne(id);
-//         } catch (error) {
-//             next(error);
-//         }
-//     }
-// );
-
 //Create Job
 router.post(
     "/",
@@ -101,23 +84,26 @@ router.delete(
 router.patch(
     "/:id",
     authRequired(true),
-    // profileRequired,
+    profileRequired,
     async (req, res, next) => {
         const id = req.params.id;
         const userId = req.user?._id;
+        const isEmployer = req.user?.employer;
         try {
             let currentJob = await jobService.getOne(id);
             const executorId = req.body.taskExecutor;
             if (executorId == null) {
                 const updatedJob = await jobService.cancelJob(
                     userId,
-                    currentJob
+                    currentJob,
+                    isEmployer
                 );
                 res.status(200).json(updatedJob);
             } else {
                 const updatedJob = await jobService.applyJob(
                     executorId,
-                    currentJob
+                    currentJob,
+                    isEmployer
                 );
                 res.status(200).json(updatedJob);
             }

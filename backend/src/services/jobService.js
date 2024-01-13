@@ -31,7 +31,11 @@ exports.remove = (id) => {
     return Job.findByIdAndDelete(id);
 };
 
-exports.applyJob = (executorId, job) => {
+exports.applyJob = (executorId, job, isEmployer) => {
+    if (isEmployer == true) {
+        throw new CustomError(400, "You haven't registered as employee.");
+    }
+
     if (!mongoose.Types.ObjectId.isValid(executorId)) {
         throw new CustomError(404, "No such user.");
     }
@@ -54,7 +58,11 @@ exports.applyJob = (executorId, job) => {
         }
     );
 };
-exports.cancelJob = (userId, job) => {
+
+exports.cancelJob = (userId, job, isEmployer) => {
+    if (isEmployer == true) {
+        throw new CustomError(400, "You haven't registered as employee.");
+    }
     if (job.taskExecutor == null) {
         throw new CustomError(400, "You aren't the job executor.");
     }
