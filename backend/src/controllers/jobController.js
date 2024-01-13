@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const jobService = require("../services/jobService");
 const cloudinary = require("../configs/cloudinaryConfig");
+const mongoose = require("mongoose");
 const { sanitizeData } = require("../middlewares/sanitizer");
 const { authRequired } = require("../middlewares/authMiddleware");
 const { profileRequired } = require("../middlewares/profileMiddleware");
@@ -27,6 +28,23 @@ router.get("/:id", async (req, res, next) => {
         next(error);
     }
 });
+
+// Take Job
+//TODO: if not owner , if hasn't already taken this job,if not registered as job provider,
+// router.get(
+//     "/apply/:id",
+//     authRequired(true),
+//     profileRequired,
+//     async (req, res, next) => {
+//         const id = req.params.id;
+//         const userId = req.user?._id;
+//         try {
+//             const currentJob = await jobService.getOne(id);
+//         } catch (error) {
+//             next(error);
+//         }
+//     }
+// );
 
 //Create Job
 router.post(
@@ -74,6 +92,36 @@ router.delete(
 
             await cloudinary.uploader.destroy(job.image.public_id);
             res.status(200).json(job);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
+router.patch(
+    "/:id",
+    authRequired(true),
+    // profileRequired,
+    async (req, res, next) => {
+        const id = req.params.id;
+        const userId = req.user?._id;
+        try {
+            let currentJob = await jobService.getOne(id);
+            const executorId = req.body.taskExecutor;
+            if (executorId == null) {
+                const updatedJob = await jobService.cancelJob(
+                    userId,
+                    currentJob
+                );
+                res.status(200).json(updatedJob);
+            } else {
+                const updatedJob = await jobService.applyJob(
+                    executorId,
+                    currentJob
+                );
+                res.status(200).json(updatedJob);
+            }
+            // const currentJob = await jobService.getOne(id);
         } catch (error) {
             next(error);
         }
