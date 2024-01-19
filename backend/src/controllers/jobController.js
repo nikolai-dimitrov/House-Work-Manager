@@ -9,8 +9,22 @@ const CustomError = require("../utils/customError");
 
 // Retrieve all Jobs
 router.get("/", async (req, res, next) => {
+    const skip = req?.query?.skip || 0;
+    const limit = 10;
+    // ownerId || taskExecutorId
+    const search = req?.query?.search || null;
+    // exampleId
+    const id = req?.query?.id || null;
+    const status = req?.query?.status || null;
+    console.log(search, id);
     try {
-        const jobs = await jobService.getAll();
+        const jobs = await jobService.getAll(
+            skip,
+            limit,
+            search,
+            id,
+            status
+        );
         res.status(200).json(jobs);
     } catch (error) {
         next(error);

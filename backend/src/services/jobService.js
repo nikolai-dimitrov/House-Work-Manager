@@ -1,8 +1,23 @@
 const Job = require("../models/Job");
 const mongoose = require("mongoose");
 const CustomError = require("../utils/customError");
-exports.getAll = () => {
-    return Job.find({ status: "Published" });
+exports.getAll = async (skip, limit, search, id, status) => {
+    let count = await Job.countDocuments({ status: "Published" });
+    const query = {};
+
+    if (search == "owner") {
+        query["owner"] = id;
+        count = await Job.countDocuments({ owner: id });
+    } else if (search == "taskExecutor") {
+        query["taskExecutor"] = id;
+        count = await Job.countDocuments({ taskExecutor: id });
+    }
+
+    let jobs = await Job.find(status ? { status } : {})
+        .skip(skip)
+        .limit(limit)
+        .where(query);
+    return { jobs, count };
 };
 
 exports.getOne = async (id) => {
@@ -62,9 +77,6 @@ exports.applyJob = (executorId, job, isEmployer) => {
 exports.cancelJob = (userId, job, isEmployer) => {
     if (isEmployer == true) {
         throw new CustomError(400, "You haven't registered as employee.");
-    }
-    if (job.taskExecutor == null) {
-        throw new CustomError(400, "You aren't the job executor.");
     }
 
     if (job.taskExecutor != userId) {
